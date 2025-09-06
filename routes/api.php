@@ -46,3 +46,4 @@ Route::middleware(['auth:sanctum', 'permission:create products'])->group(functio
     Route::apiResource('products', ProductController::class)
         ->only(['store', 'update', 'destroy']);
 });
+Route::post('product/search',[ProductController::class,'search']);

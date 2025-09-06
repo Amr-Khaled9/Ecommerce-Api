@@ -14,7 +14,7 @@ class ProductController extends Controller
 
     public function index()
     {
-        $products =Product::all();
+        $products =Product::active()->get();
         return response()->json([
             'status' => true,
             'message' => 'Products fetched successfully',
@@ -23,28 +23,26 @@ class ProductController extends Controller
 
     public function store(StoreProductRequest $request)
     {
-        $product = Product::create([
-            'name'=> $request->name,
-            'slug'=> Str::slug($request->name,'-'),
-            'description'=> $request->description,
-            'price'=> $request->price,
-            'stock'=> $request->stock,
-            'sku'=> $request->sku,
-            'is_active'=> $request->is_active,
-        ]);
+         $data = $request->validated();
+
+         $data['slug'] = Str::slug($request->name, '-');
+
+        // أنشئ المنتج
+        $product = Product::create($data);
+
         return response()->json([
-            'status' => true,
+            'status'  => true,
             'message' => 'Product created successfully',
-            'data' => $product
+            'data'    => $product
         ], 201);
-
-
     }
+
 
 
     public function show($id)
     {
         $product = Product::findOrFail($id);
+
         return response()->json([
             'status' => true,
             'message' => 'Product fetched successfully',
@@ -53,18 +51,18 @@ class ProductController extends Controller
     }
 
 
-    public function update(UpdateProductRequest $request)
+    public function update(UpdateProductRequest $request ,$id)
     {
-        $product = Product::findOrFail($request->id);
+        $product = Product::findOrFail($id);
         if($request->has('name')){
              $product->name= $request->name;
         $product->slug= Str::slug($request->name,'-');
-    }
-        if($request->has('description')) $request->description = $request->description;
-        if($request->has('price')) $request->price = $request->price;
-        if($request->has('stock')) $request->stock = $request->stock;
-        if($request->has('sku')) $request->sku = $request->sku;
-        if($request->has('is_active')) $request->is_active = $request->is_active;
+        }
+        if($request->has('description')) $product->description = $request->description;
+        if($request->has('price')) $product->price = $request->price;
+        if($request->has('stock')) $product->stock = $request->stock;
+        if($request->has('sku')) $product->sku = $request->sku;
+        if($request->has('is_active')) $product->is_active = $request->is_active;
 
         $product->save();
         return response()->json([
@@ -86,5 +84,16 @@ class ProductController extends Controller
     }
 
     // search
+    public function Search(Request $request)
+    {
+        $request->validate(['name'=>'required||string|max:255']);
+        $product = Product::where('name', 'like', '%' . $request->name . '%')->get();
+        return response()->json([
+           'status'=> true,
+            'message'=>'Product fetched successfully',
+            'data'=>$product,
+        ],200);
+
+    }
 
 }
