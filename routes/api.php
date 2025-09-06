@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Auth\CustomerAuthController;
 use App\Http\Controllers\Auth\DeliveryAuthController;
@@ -39,4 +40,9 @@ Route::prefix('delivery')->group(function () {
     });
 });
 
+Route::apiresource('products',ProductController::class)->only('index','show');
 
+Route::middleware(['auth:sanctum', 'permission:create products'])->group(function () {
+    Route::apiResource('products', ProductController::class)
+        ->only(['store', 'update', 'destroy']);
+});
