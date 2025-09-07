@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Auth\CustomerAuthController;
 use App\Http\Controllers\Auth\DeliveryAuthController;
@@ -39,4 +41,29 @@ Route::prefix('delivery')->group(function () {
     });
 });
 
+Route::apiresource('products',ProductController::class)->only('index','show');
 
+Route::middleware(['auth:sanctum', 'permission:create products'])->group(function () {
+    Route::apiResource('products', ProductController::class)
+        ->only(['store', 'update', 'destroy']);
+});
+
+Route::prefix('product')->controller(ProductController::class)->group(function () {
+    Route::middleware(['auth:sanctum','permission:delete products'])->group(function () {
+        Route::patch('restore/{id}', 'restore');
+        Route::delete('forceDelete/{id}', 'forceDelete');
+    });
+
+    Route::post('search', 'search');
+    Route::get('deleted', 'getDeleteOnly');
+    Route::get('all', 'getAllProduct');
+    Route::post('filter', 'filterByPrice');
+});
+
+
+Route::apiresource('categories',CategoryController::class)->only('index','show');
+
+Route::middleware(['auth:sanctum', 'permission:create products'])->group(function () {
+    Route::apiResource('categories', CategoryController::class)
+        ->only(['store', 'update', 'destroy']);
+});
