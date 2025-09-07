@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Auth\CustomerAuthController;
 use App\Http\Controllers\Auth\DeliveryAuthController;
@@ -39,4 +40,19 @@ Route::prefix('delivery')->group(function () {
     });
 });
 
+Route::apiresource('products',ProductController::class)->only('index','show');
 
+Route::middleware(['auth:sanctum', 'permission:create products'])->group(function () {
+    Route::apiResource('products', ProductController::class)
+        ->only(['store', 'update', 'destroy']);
+});
+
+Route::middleware(['auth:sanctum','permission:delete products'])->group(function () {
+    Route::patch('product/restore/{id}', [ProductController::class,'restore']);
+    Route::delete('product/forceDelete/{id}', [ProductController::class,'forceDelete']);
+});
+
+Route::post('product/search',[ProductController::class,'search']);
+Route::get('product/deleted',[ProductController::class,'getDeleteOnly']);
+Route::get('product/all',[ProductController::class,'getAllProduct']);
+Route::post('product/filter',[ProductController::class,'filterByPrice']);
