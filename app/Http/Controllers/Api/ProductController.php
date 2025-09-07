@@ -26,7 +26,8 @@ class ProductController extends Controller
             'status' => true,
             'message' => 'Products fetched successfully',
             'data' => $products
-        ], 200);    }
+        ], 200);
+    }
 
     public function store(StoreProductRequest $request)
     {
