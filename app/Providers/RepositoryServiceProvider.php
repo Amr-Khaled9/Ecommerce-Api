@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
-use App\Repository\RepositoryFunction\CategoryRepository;
-use App\Repository\RepositoryFunction\ProductRepository;
+use App\Repository\CategoryRepository;
+use App\Repository\ProductRepository;
 use App\Repository\RepositoryInterface\CategoryRepositoryInterface;
 use App\Repository\RepositoryInterface\ProductRepositoryInterface;
 use Illuminate\Support\ServiceProvider;

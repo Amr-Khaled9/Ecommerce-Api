@@ -67,3 +67,5 @@ Route::middleware(['auth:sanctum', 'permission:create products'])->group(functio
     Route::apiResource('categories', CategoryController::class)
         ->only(['store', 'update', 'destroy']);
 });
+
+Route::get('category/all-product',[CategoryController::class,'getAllProduct']);

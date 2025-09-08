@@ -40,6 +40,8 @@ class UpdateProductRequest extends FormRequest
                 Rule::unique('products')->ignore($this->product),
             ],
             'is_active'=> 'sometimes|boolean',
+            'image'=>'sometimes|image|mimes:png,jpg,gif|max:2048'
+
         ];
     }
 }

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
@@ -17,7 +18,8 @@ use HasFactory ,SoftDeletes;
         'stock',
         'sku',
         'is_active',
-        'delete_at'
+        'delete_at',
+        'image'
     ];
     // in stock
 
@@ -29,5 +31,15 @@ use HasFactory ,SoftDeletes;
 
     public static function scopeActive($query){
         return $query->where('is_active',true);
+    }
+
+    public function categories(): BelongsToMany
+    {
+        return $this->belongsToMany(Category::class,'category_product');
+    }
+
+    public function getImageUrlAttribute()
+    {
+        return $this->image ? asset('storage/'.$this->image) : null ;
     }
 }
