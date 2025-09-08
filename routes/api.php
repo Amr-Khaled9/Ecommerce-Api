@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Auth\AdminAuthController;
@@ -41,7 +42,7 @@ Route::prefix('delivery')->group(function () {
     });
 });
 
-Route::apiresource('products',ProductController::class)->only('index','show');
+Route::apiresource('products', ProductController::class)->only('index', 'show');
 
 Route::middleware(['auth:sanctum', 'permission:create products'])->group(function () {
     Route::apiResource('products', ProductController::class)
@@ -49,7 +50,7 @@ Route::middleware(['auth:sanctum', 'permission:create products'])->group(functio
 });
 
 Route::prefix('product')->controller(ProductController::class)->group(function () {
-    Route::middleware(['auth:sanctum','permission:delete products'])->group(function () {
+    Route::middleware(['auth:sanctum', 'permission:delete products'])->group(function () {
         Route::patch('restore/{id}', 'restore');
         Route::delete('forceDelete/{id}', 'forceDelete');
     });
@@ -61,11 +62,16 @@ Route::prefix('product')->controller(ProductController::class)->group(function (
 });
 
 
-Route::apiresource('categories',CategoryController::class)->only('index','show');
+Route::apiresource('categories', CategoryController::class)->only('index', 'show');
 
 Route::middleware(['auth:sanctum', 'permission:create products'])->group(function () {
     Route::apiResource('categories', CategoryController::class)
         ->only(['store', 'update', 'destroy']);
 });
 
-Route::get('category/all-product',[CategoryController::class,'getAllProduct']);
+Route::get('category/all-product', [CategoryController::class, 'getAllProduct']);
+
+Route::middleware(['auth:sanctum', 'permission:create orders'])->group(function () {
+    Route::apiresource('carts', CartController::class)->middleware('auth:sanctum');
+    Route::delete('cart/clear', [CartController::class, 'clear']);
+});
