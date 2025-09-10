@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\CheckoutController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Auth\CustomerAuthController;
@@ -74,4 +75,10 @@ Route::get('category/all-product', [CategoryController::class, 'getAllProduct'])
 Route::middleware(['auth:sanctum', 'permission:create orders'])->group(function () {
     Route::apiresource('carts', CartController::class)->middleware('auth:sanctum');
     Route::delete('cart/clear', [CartController::class, 'clear']);
+});
+
+Route::middleware(['auth:sanctum', 'permission:create orders'])->group(function () {
+    Route::post('checkout',[CheckoutController::class,'checkout']);
+    Route::get('orders',[CheckoutController::class,'orderHistory']);
+    Route::get('orders/{id}',[CheckoutController::class,'orderDetails']);
 });

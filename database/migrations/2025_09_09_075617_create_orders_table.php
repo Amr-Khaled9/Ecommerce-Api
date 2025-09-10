@@ -17,6 +17,7 @@ return new class extends Migration
                 ->onUpdate('cascade')->onDelete('cascade');
             $table->string('status')->default('pending');
             $table->string('shipping_name');
+            $table->string('shipping_city');
             $table->string('shipping_address');
             $table->string('shipping_status')->nullable();
             $table->string('shipping_zipcode');

@@ -28,6 +28,10 @@ use HasFactory ,SoftDeletes;
     {
         return $this->stock >0;
     }
+    public function is_active()
+    {
+        return (bool) $this->is_active;
+    }
 
     public static function scopeActive($query){
         return $query->where('is_active',true);
