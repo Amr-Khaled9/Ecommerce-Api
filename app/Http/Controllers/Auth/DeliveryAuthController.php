@@ -24,6 +24,14 @@ class DeliveryAuthController extends Controller
             'password' => $password,
             'type' => 'delivery'
         ]);
+        // assign role based on type
+        if ($user->type === 'admin') {
+            $user->assignRole('admin');
+        } elseif ($user->type === 'delivery') {
+            $user->assignRole('delivery');
+        } else {
+            $user->assignRole('customer');
+        }
         //generate token
         $token = $user->createToken('auth_token')->plainTextToken;  //$request->device_name
         // return response
