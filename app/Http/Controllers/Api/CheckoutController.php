@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\DB;
 class CheckoutController extends Controller
 {
     // Check out to place order and save it to DB
-
     public function checkout(CheckoutRequest $request)
     {
         // get user
