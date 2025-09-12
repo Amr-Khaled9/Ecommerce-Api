@@ -22,7 +22,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('orders', function (Blueprint $table) {
-            //
+            $table->string('transation_id')->nullable()->after('payment_status');
+            $table->timestamp('paid_at')->nullable()->after('transation_id');
         });
     }
 };
