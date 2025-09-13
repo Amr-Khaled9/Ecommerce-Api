@@ -15,13 +15,12 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
             $table->foreignId('order_id')->references('id')->on('orders')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreignId('order_id')->constrained()->onDelete('cascade');
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+
             $table->string('provider');
 
-            $table->string('payment_intent_id')->nullable();
+            $table->string('payment_intent_id')->nullable(); // الهيطلع من عمليه الدفع نفسها
             $table->string('paypal_order_id')->nullable();
-            $table->string('paypal_capture_id')->nullable() ;
+            $table->string('paypal_capture_id')->nullable();
             $table->decimal('amount', 10, 2);
             $table->string('currency', 3)->default('USD');
             $table->string('status');

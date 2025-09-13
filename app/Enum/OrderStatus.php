@@ -10,6 +10,7 @@ enum OrderStatus: string
     case SHIPPING = 'shipping'; // order sent to delivery
     case DELIVERED = 'delivered';
     case CANCELLED = 'cancelled';
+    case SHIPPED = 'shipped';
 
     public static function values(): array
     {
@@ -27,4 +28,37 @@ enum OrderStatus: string
     // ]
     //const عشان تعرف تنادي علي اي حاجه self  طبعا ب  
     //بسvalus  هوا هنا هيخرج 
+
+     // get allowed transitions
+    public function getAllowedTransitions(): array
+    {
+        return match($this) {
+            self::PENDING => [self::PAID, self::CANCELLED],
+            self::PAID => [self::PROCESSING, self::CANCELLED],
+            self::PROCESSING => [self::SHIPPED, self::CANCELLED],
+            self::SHIPPED => [self::DELIVERED],
+            self::DELIVERED => [],
+            self::CANCELLED => [],
+        };
+    }
+
+    // validation can transition to
+    
+    public function canTransitionTo(OrderStatus $targetStatus): bool
+    {
+        return in_array($targetStatus, $this->getAllowedTransitions());
+    }
+
+    // Get the label for the status
+    public function getLabel(): string
+    {
+        return match($this) {
+            self::PENDING => 'Pending',
+            self::PAID => 'Paid',
+            self::PROCESSING => 'Processing',
+            self::SHIPPED => 'Shipped',
+            self::DELIVERED => 'Delivered',
+            self::CANCELLED => 'Cancelled',
+        };
+    }
 }

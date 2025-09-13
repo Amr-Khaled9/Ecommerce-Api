@@ -80,7 +80,7 @@ class PaymentController extends Controller
 
             $payment->update([
                 'payment_intent_id' => $paymentIntent->id,
-                'metadata' => array_merge($order->metadata, [
+                'metadata' => array_merge($payment->metadata, [
                     'client_secret' => $paymentIntent->client_secret
                 ])
             ]);
