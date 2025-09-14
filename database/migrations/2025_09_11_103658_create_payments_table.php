@@ -1,0 +1,43 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('payments', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignId('order_id')->references('id')->on('orders')->onDelete('cascade')->onUpdate('cascade');
+
+            $table->string('provider');
+
+            $table->string('payment_intent_id')->nullable(); // الهيطلع من عمليه الدفع نفسها
+            $table->string('paypal_order_id')->nullable();
+            $table->string('paypal_capture_id')->nullable();
+            $table->decimal('amount', 10, 2);
+            $table->string('currency', 3)->default('USD');
+            $table->string('status');
+
+            $table->json('metadata')->nullable(); // For storing additional information like payment method details
+
+            $table->timestamp('completed_at')->nullable(); // When the payment was completed
+
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('payments');
+    }
+};

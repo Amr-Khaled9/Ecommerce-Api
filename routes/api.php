@@ -1,11 +1,17 @@
 <?php
 
-use App\Http\Controllers\Auth\AdminAuthController;
-use App\Http\Controllers\Auth\CustomerAuthController;
-use App\Http\Controllers\Auth\DeliveryAuthController;
-use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Api\CartController;
+use App\Http\Controllers\Api\PaymentController;
+use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\CheckoutController;
+use App\Http\Controllers\Auth\AdminAuthController;
+use App\Http\Controllers\OrderManagmentController;
+use App\Http\Controllers\Auth\CustomerAuthController;
+use App\Http\Controllers\Auth\DeliveryAuthController;
 
 
 Route::prefix('admin')->group(function () {
@@ -39,4 +45,62 @@ Route::prefix('delivery')->group(function () {
     });
 });
 
+Route::apiresource('products', ProductController::class)->only('index', 'show');
 
+Route::middleware(['auth:sanctum', 'permission:create products'])->group(function () {
+    Route::apiResource('products', ProductController::class)
+        ->only(['store', 'update', 'destroy']);
+});
+
+Route::prefix('product')->controller(ProductController::class)->group(function () {
+    Route::middleware(['auth:sanctum', 'permission:delete products'])->group(function () {
+        Route::patch('restore/{id}', 'restore');
+        Route::delete('forceDelete/{id}', 'forceDelete');
+    });
+
+    Route::post('search', 'search');
+    Route::get('deleted', 'getDeleteOnly');
+    Route::get('all', 'getAllProduct');
+    Route::post('filter', 'filterByPrice');
+});
+
+
+Route::apiresource('categories', CategoryController::class)->only('index', 'show');
+
+Route::middleware(['auth:sanctum', 'permission:create products'])->group(function () {
+    Route::apiResource('categories', CategoryController::class)
+        ->only(['store', 'update', 'destroy']);
+});
+
+Route::get('category/all-product', [CategoryController::class, 'getAllProduct']);
+
+Route::middleware(['auth:sanctum', 'permission:create orders'])->group(function () {
+    Route::apiresource('carts', CartController::class)->middleware('auth:sanctum');
+    Route::delete('cart/clear', [CartController::class, 'clear']);
+});
+
+Route::middleware(['auth:sanctum', 'permission:create orders'])->group(function () {
+    Route::post('checkout',[CheckoutController::class,'checkout']);
+    Route::get('orders',[CheckoutController::class,'orderHistory']);
+    Route::get('orders/{id}',[CheckoutController::class,'orderDetails']);
+   // handle payment
+   // Create payment (Stripe or other providers in the future)
+   Route::post('/orders/{order}/payments', [PaymentController::class, 'createPayment']);
+
+   // Confirm payment status
+   Route::get('/payments/{paymentId}/confirm', [PaymentController::class, 'confirmPayment']);
+});
+
+// Webhook endpoints (no authentication required)
+Route::post('/webhooks/stripe', [PaymentController::class, 'stripeWebhook']);
+
+
+
+// Admin-only order management routes
+Route::middleware(['auth:sanctum', 'permission:create orders'])->group(function () {
+    // Order management endpoints
+    Route::get('/admin/orders', [OrderManagmentController::class, 'index']);
+    Route::get('/admin/orders/{order}', [OrderManagmentController::class, 'show']);
+    Route::patch('/admin/orders/{order}/status', [OrderManagmentController::class, 'updateStatus']);
+    Route::post('/admin/orders/{order}/cancel', [OrderManagmentController::class, 'cancel']);
+});
